@@ -4,11 +4,11 @@
 
 // Joint(DEFAULT_DEGREE, MIN_DEGREE, MAX_DEGREE, SMOOTH_ROTATION_DELAY, TITLE)
 Joint joints[] = {
-  Joint(90, 30, 150, 15, "A"),
-  Joint(90, 30, 150, 15, "B"),
-  Joint(175, 90, 180, 15, "C"),
-  Joint(175, 90, 180, 15, "D"),
-  Joint(90, 30, 180, 15, "E")
+  Joint(100, 30, 150, 20, "A"),
+  Joint(82, 30, 150, 20, "B"),
+  Joint(75, 40, 180, 20, "C"),
+  Joint(80, 40, 180, 20, "D"),
+  Joint(90, 30, 180, 20, "E")
 };
 
 String write_command = "WRITE";
