@@ -39,6 +39,9 @@ class Joint
     // Returns the joint's title
     String getTitle();
 
+    // Returns the joint's rotation
+    int getRotation();
+
     void attach(int pin);
 
   private:

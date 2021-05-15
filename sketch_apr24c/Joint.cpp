@@ -26,6 +26,12 @@ String Joint::getTitle()
   return _title;
 }
 
+// Returns the joint's rotation
+int Joint::getRotation()
+{
+  return _servo.read();
+}
+
 // Return true if the given string's content
 // is matching the Joint's title somewhere
 bool Joint::matchTitle(String title)

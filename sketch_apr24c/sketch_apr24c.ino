@@ -8,7 +8,7 @@ Joint joints[] = {
   Joint(82, 30, 150, 20, "B"),
   Joint(75, 40, 180, 20, "C"),
   Joint(80, 40, 180, 20, "D"),
-  Joint(90, 30, 180, 20, "E")
+  Joint(90, 20, 100, 20, "E")
 };
 
 String write_command = "WRITE";
@@ -18,7 +18,30 @@ String random_command = "RANDOM";
 
 int max_joints = 5;
 
+// defines pins numbers
+const int trigPin = 6;
+const int echoPin = 7;
+// defines variables
+long duration;
+int distance;
+
+int VRx = A0;
+int VRy = A1;
+int SW = 4;
+int xPosition = 0;
+int yPosition = 0;
+int SW_state = 0;
+int mapX = 0;
+int mapY = 0;
+
 void setup() {
+  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+
+  pinMode(VRx, INPUT);
+  pinMode(VRy, INPUT);
+  pinMode(SW, INPUT_PULLUP); 
+  
   joints[0].attach(8);
   joints[1].attach(9);
   joints[2].attach(10);
@@ -47,6 +70,66 @@ void setup() {
 }
 
 void loop() {
+
+  // Ultrasonic Sensor
+  // Clears the trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin on HIGH state for 10 micro seconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
+  // Calculating the distance
+  distance = (duration * (0.034/2));
+  float triggerDist = 10;
+  if (distance < triggerDist) {
+    int offset = 5;
+    int isClosed = 80;
+    int isOpen = 20;
+    int degreeE = joints[4].getRotation();
+    Serial.println("degreeE: ");
+    Serial.print(degreeE);
+    
+    if (degreeE < isClosed) {
+      joints[4].smoothRotation(isClosed+offset);
+      Serial.println("isClosed");
+    }
+    else
+    {
+      joints[4].smoothRotation(isOpen);
+      Serial.println("isOpen");
+    }
+  }
+  // Prints the distance on the Serial Monitor
+  Serial.print("Distance: ");
+  Serial.println(distance);
+
+  // Joystick
+  xPosition = analogRead(VRx);
+  yPosition = analogRead(VRy);
+  SW_state = digitalRead(SW);
+  int x = map(xPosition, 0, 1023, -20, 20);
+  int y = map(yPosition, 0, 1023, -20, 20);
+  if (SW_state == 0) {
+    int degreeA = joints[0].getRotation();
+    int nextA = (degreeA + y);
+    joints[0].smoothRotation(nextA);
+
+    int degreeB = joints[1].getRotation();
+    int nextB = (degreeB + x);
+    joints[1].smoothRotation(nextB);
+
+    int degreeC = joints[2].getRotation();
+    int nextC = (degreeC + (-x));
+    joints[2].smoothRotation(nextC);
+
+    int degreeD = joints[3].getRotation();
+    int nextD = (degreeD + (-x));
+    joints[3].smoothRotation(nextD);
+  }
+    
   String message = Serial.readString();
   if (message != "")
   {
